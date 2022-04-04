@@ -284,3 +284,36 @@ h2 {
 	text-decoration: none;
 	letter-spacing: normal;
 }
+
+@media only screen and (min-width: 1700px) {
+
+	.navTop ul{
+		width: 80%;
+	}
+	.navMid ul {
+		width: 75%;
+	}
+	.navMid a {
+		font-size: 0.9em;
+	}
+
+	.imgSvSNav{
+		margin-left: 350px;
+	}
+
+	.imgNav {
+		width: 16px;
+		height: 16px;
+		margin-bottom: -3px;
+	}
+
+	.imgNavSI {
+		width: 16px;
+		height: 16px;
+		margin-bottom: -3px;
+	}
+	main{
+		margin-left: 150px;
+		margin-right: 150px;
+	}
+}
