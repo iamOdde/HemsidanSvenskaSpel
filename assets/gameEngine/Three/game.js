@@ -35,30 +35,25 @@ const camera = new BABYLON.ArcRotateCamera(
   -Math.PI / 2,
   Math.PI / 2.5,
   3,
-  //new BABYLON.Vector3(0, 0, 0),
-  new BABYLON.Vector3(0, 35, -50),
+  //new BABYLON.Vector3(0, 25, 0),
+  new BABYLON.Vector3(0, 35, -60),
   scene
 );
 camera.attachControl(canvas, true);
 //camera.inputs.clear();
+camera.setTarget(new BABYLON.Vector3(0, 25, 0));
 
 const light = new BABYLON.HemisphericLight(
   "light",
-  new BABYLON.Vector3(0, 10, -10),
-  scene
-);
-const light2 = new BABYLON.HemisphericLight(
-  "light",
-  new BABYLON.Vector3(0, 10, 10),
+  new BABYLON.Vector3(0, 20, -10),
   scene
 );
 
 const mapWidth = 25;
-const mapLenght = 6;
+const mapLenght = 2;
 const mapHight = 50;
 
 var ground = BABYLON.Mesh.CreateGround("ground", mapWidth, mapLenght, 1, scene);
-ground.position.y = -1;
 
 const wallBack = BABYLON.MeshBuilder.CreateBox(
   "plane",
@@ -67,7 +62,7 @@ const wallBack = BABYLON.MeshBuilder.CreateBox(
 );
 
 wallBack.position.z = mapLenght / 2;
-wallBack.position.y = mapHight / 2 - 1;
+wallBack.position.y = mapHight / 2;
 
 const wallFront = BABYLON.MeshBuilder.CreateBox(
   "plane",
@@ -76,7 +71,7 @@ const wallFront = BABYLON.MeshBuilder.CreateBox(
 );
 
 wallFront.position.z = -(mapLenght / 2);
-wallFront.position.y = mapHight / 2 - 1;
+wallFront.position.y = mapHight / 2;
 wallFront.visibility = 0.1;
 
 const wallLeft = BABYLON.MeshBuilder.CreateBox(
@@ -86,7 +81,7 @@ const wallLeft = BABYLON.MeshBuilder.CreateBox(
 );
 
 wallLeft.position.x = -(mapWidth / 2);
-wallLeft.position.y = mapHight / 2 - 1;
+wallLeft.position.y = mapHight / 2;
 
 const wallRight = BABYLON.MeshBuilder.CreateBox(
   "plane",
@@ -95,7 +90,7 @@ const wallRight = BABYLON.MeshBuilder.CreateBox(
 );
 
 wallRight.position.x = mapWidth / 2;
-wallRight.position.y = mapHight / 2 - 1;
+wallRight.position.y = mapHight / 2;
 
 //Cylinders rad 1
 
@@ -208,6 +203,35 @@ const cylinder21 = cylinder1.clone("cylinder");
 cylinder21.position.x = 10;
 cylinder21.position.y = mapHight2 - 20;
 cylinder21.position.z = 0;
+
+//Rektanglar på botten
+
+const botRec = BABYLON.MeshBuilder.CreateBox(
+  "botRec",
+  { height: mapHight / 10, width: 0.5, depth: mapLenght },
+  scene
+);
+botRec.position.y = mapHight / 20;
+
+const botCyl = BABYLON.MeshBuilder.CreateCylinder(
+  "botCyl",
+  { height: mapLenght, width: 0.1, depth: 0.1 },
+  scene
+);
+botCyl.rotation.x = BABYLON.Tools.ToRadians(90);
+botCyl.position.y = mapHight / 20;
+
+const botColor = new BABYLON.StandardMaterial("botColor");
+botColor.diffuseColor = new BABYLON.Color3.Blue();
+botRec.material = botColor;
+botCyl.material = botColor;
+
+botCyl.parent = botRec;
+
+const botRec2 = botRec.clone("botCyl");
+botRec2.position.x = 6.25;
+const botRec3 = botRec.clone("botCyl");
+botRec3.position.x = -6.25;
 
 //Bollarna
 const smallSphere = BABYLON.MeshBuilder.CreateSphere("sphereCube", {
@@ -415,6 +439,26 @@ cylinder21.physicsImpostor = new BABYLON.PhysicsImpostor(
   scene
 );
 
+//Botten rec fysik
+botRec.physicsImpostor = new BABYLON.PhysicsImpostor(
+  botRec,
+  BABYLON.PhysicsImpostor.SphereImpostor,
+  { mass: 0, restitution: 0.9 },
+  scene
+);
+botRec2.physicsImpostor = new BABYLON.PhysicsImpostor(
+  botRec2,
+  BABYLON.PhysicsImpostor.SphereImpostor,
+  { mass: 0, restitution: 0.9 },
+  scene
+);
+botRec3.physicsImpostor = new BABYLON.PhysicsImpostor(
+  botRec3,
+  BABYLON.PhysicsImpostor.SphereImpostor,
+  { mass: 0, restitution: 0.9 },
+  scene
+);
+
 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(
   "UI"
 );
@@ -435,7 +479,7 @@ var createBall = function () {
   );
   ball.checkCollisions = true;
   ball.position.y = 45;
-  ball.position.x = -0.1;
+  ball.position.x = Math.random() * 2 - 0.9;
   const ballColor = new BABYLON.StandardMaterial("ballColor");
   ballColor.diffuseColor = new BABYLON.Color3(
     Math.random() * 2,
@@ -463,6 +507,7 @@ button1.width = "100px";
 button1.height = "40px";
 button1.color = "black";
 button1.cornerRadius = 5;
+button1.fontSize = 14;
 button1.background = "white";
 button1.left;
 button1.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -478,6 +523,7 @@ button2.width = "100px";
 button2.left = "100px";
 button2.height = "40px";
 button2.color = "black";
+button2.fontSize = 14;
 button2.cornerRadius = 5;
 button2.background = "white";
 button2.left;
@@ -491,7 +537,37 @@ button2.onPointerUpObservable.add(function () {
 });
 advancedTexture.addControl(button2);
 
+var button3 = BABYLON.GUI.Button.CreateSimpleButton(
+  "but2",
+  "Delete out of bounds"
+);
+button3.width = "100px";
+button3.right = "10px";
+button3.height = "40px";
+button3.fontSize = 14;
+button3.color = "black";
+button3.cornerRadius = 5;
+button3.background = "white";
+button3.left;
+button3.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+button3.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+button3.onPointerUpObservable.add(function () {
+  checkIfOutside();
+});
+advancedTexture.addControl(button3);
+
 const tick = () => {
   console.log("FPS: ", engine.getFps().toFixed());
 };
 setInterval(tick, 1000);
+
+const checkIfOutside = () => {
+  for (let j = 0; j < scene.meshes.length; j++) {
+    if (scene.meshes[j].position.y < -10) {
+      console.log("Delete mesh");
+      scene.meshes[j].dispose();
+      ballCount = ballCount - 1;
+      text1.text = ballCount + " balls";
+    }
+  }
+};
