@@ -1,5 +1,5 @@
 import * as THREE from "../../../node_modules/three/build/three.module.js";
-
+console.log("hej");
 import { OrbitControls } from "../../../node_modules/three/examples/jsm/controls/OrbitControls.js";
 
 const scene = new THREE.Scene();
@@ -28,7 +28,7 @@ scene.add(sphere);
 const light = new THREE.AmbientLight(0xffffff);
 scene.add(light);
 
-const controls = new OrbitControls(camera, renderer.domElement);
+//const controls = new OrbitControls(camera, renderer.domElement);
 
 function animate() {
   requestAnimationFrame(animate);
