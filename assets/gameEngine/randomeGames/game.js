@@ -420,9 +420,7 @@ scene.actionManager.registerAction(
   )
 );
 
-/* FPS
 const tick = () => {
   console.log("FPS: ", engine.getFps().toFixed());
 };
 setInterval(tick, 1000);
-*/

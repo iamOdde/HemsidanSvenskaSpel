@@ -43,9 +43,16 @@ camera.attachControl(canvas, true);
 //camera.inputs.clear();
 camera.setTarget(new BABYLON.Vector3(0, 25, 0));
 
+/*Gammla ljuset
 const light = new BABYLON.HemisphericLight(
   "light",
   new BABYLON.Vector3(0, 35, -60),
+  scene
+);
+*/
+const light = new BABYLON.PointLight(
+  "light",
+  new BABYLON.Vector3(0, 35, -80),
   scene
 );
 
@@ -469,9 +476,8 @@ botRec3.physicsImpostor = new BABYLON.PhysicsImpostor(
   scene
 );
 
-var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(
-  "UI"
-);
+var advancedTexture =
+  BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
 // Funktion för att skapa bollar
 
@@ -497,6 +503,45 @@ var createBall = function () {
     Math.random() * 2
   );
   ball.material = ballColor;
+  ballCount = ballCount + 1;
+  text1.text = ballCount + " balls";
+  return ball;
+};
+var theImages = new Array();
+theImages[0] = "../../imges/boysen/filip.PNG";
+theImages[1] = "../../imges/boysen/filip2.PNG";
+theImages[2] = "../../imges/boysen/herman.PNG";
+theImages[3] = "../../imges/boysen/matsboge.PNG";
+theImages[4] = "../../imges/boysen/timmy.PNG";
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
+var createBallIMG = function () {
+  var ball = new BABYLON.MeshBuilder.CreateSphere("sphereCube", {
+    width: 5,
+    height: 5,
+    depth: 5,
+  });
+  ball.physicsImpostor = new BABYLON.PhysicsImpostor(
+    ball,
+    BABYLON.PhysicsImpostor.SphereImpostor,
+    { mass: 1, restitution: 0.9 },
+    scene
+  );
+  ball.checkCollisions = true;
+  ball.position.y = 45;
+  ball.position.x = Math.random() * 2 - 0.9;
+
+  const ballIMG = new BABYLON.StandardMaterial("ballIMG");
+  ballIMG.diffuseTexture = new BABYLON.Texture(
+    theImages[getRandomInt(5)],
+    scene
+  );
+
+  ball.material = ballIMG;
+
   ballCount = ballCount + 1;
   text1.text = ballCount + " balls";
   return ball;
@@ -566,6 +611,40 @@ button3.onPointerUpObservable.add(function () {
 });
 advancedTexture.addControl(button3);
 
+var button4 = BABYLON.GUI.Button.CreateSimpleButton("but4", "Spawn 1 IMG");
+button4.width = "100px";
+button4.left = "-200px";
+button4.height = "40px";
+button4.color = "black";
+button4.fontSize = 14;
+button4.cornerRadius = 5;
+button4.background = "white";
+button4.left;
+button4.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+button4.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+button4.onPointerUpObservable.add(function () {
+  createBallIMG();
+});
+advancedTexture.addControl(button4);
+
+var button5 = BABYLON.GUI.Button.CreateSimpleButton("but5", "Spawn 50 IMG");
+button5.width = "100px";
+button5.left = "-100px";
+button5.height = "40px";
+button5.color = "black";
+button5.fontSize = 14;
+button5.cornerRadius = 5;
+button5.background = "white";
+button5.left;
+button5.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+button5.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+button5.onPointerUpObservable.add(function () {
+  for (let i = 0; i < 50; i++) {
+    createBallIMG();
+  }
+});
+advancedTexture.addControl(button5);
+
 const tick = () => {
   console.log("FPS: ", engine.getFps().toFixed());
 };
@@ -595,3 +674,20 @@ scene.actionManager.registerAction(
     }
   )
 );
+
+var lightSphere0 = BABYLON.Mesh.CreateSphere("Sphere0", 16, 2, scene);
+
+lightSphere0.material = new BABYLON.StandardMaterial("green", scene);
+lightSphere0.material.emissiveColor = new BABYLON.Color3(1, 0.9, 0);
+
+var alpha = 0;
+scene.beforeRender = function () {
+  light.position = new BABYLON.Vector3(
+    -60 * Math.sin(alpha),
+    35,
+    -60 * Math.cos(alpha)
+  );
+  lightSphere0.position = light.position;
+  alpha += 0.001;
+};
+//setInterval(dayNnight, 500);
