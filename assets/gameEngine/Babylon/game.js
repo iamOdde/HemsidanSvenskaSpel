@@ -56,6 +56,13 @@ const light = new BABYLON.PointLight(
   scene
 );
 
+// Ljus under
+const light2 = new BABYLON.PointLight(
+  "light2",
+  new BABYLON.Vector3(0, -5, 0),
+  scene
+);
+
 const mapWidth = 25;
 const mapLenght = 2;
 const mapHight = 50;
@@ -476,8 +483,9 @@ botRec3.physicsImpostor = new BABYLON.PhysicsImpostor(
   scene
 );
 
-var advancedTexture =
-  BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(
+  "UI"
+);
 
 // Funktion för att skapa bollar
 
@@ -494,8 +502,9 @@ var createBall = function () {
     scene
   );
   ball.checkCollisions = true;
-  ball.position.y = 45;
-  ball.position.x = Math.random() * 2 - 0.9;
+
+  ball.position.y = Math.random() * (47 - 43 + 1) + 43;
+  ball.position.x = Math.random() * (3 - -3 + 1) + -3;
   const ballColor = new BABYLON.StandardMaterial("ballColor");
   ballColor.diffuseColor = new BABYLON.Color3(
     Math.random() * 2,
@@ -517,7 +526,7 @@ theImages[4] = "../../imges/boysen/timmy.PNG";
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
-
+//Gamla math randome Math.random() * 2 - 0.9
 var createBallIMG = function () {
   var ball = new BABYLON.MeshBuilder.CreateSphere("sphereCube", {
     width: 5,
@@ -531,8 +540,8 @@ var createBallIMG = function () {
     scene
   );
   ball.checkCollisions = true;
-  ball.position.y = 45;
-  ball.position.x = Math.random() * 2 - 0.9;
+  ball.position.y = Math.random() * (47 - 43 + 1) + 43;
+  ball.position.x = Math.random() * (3 - -3 + 1) + -3;
 
   const ballIMG = new BABYLON.StandardMaterial("ballIMG");
   ballIMG.diffuseTexture = new BABYLON.Texture(

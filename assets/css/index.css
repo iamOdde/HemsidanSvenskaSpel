@@ -342,6 +342,11 @@ h2 {
   width: auto;
   height: 420px;
 }
+.unityGame {
+  width: auto;
+  height: 620px;
+  padding-top: 100px;
+}
 
 @media only screen and (min-width: 1700px) {
   .navTop ul {

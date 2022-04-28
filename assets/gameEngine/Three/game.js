@@ -44,7 +44,7 @@ function animate() {
 }
 
 //Skapa första bollen
-const smallSphereTemp = new THREE.SphereGeometry(0.9, 32, 16);
+const smallSphereTemp = new THREE.SphereGeometry(0.8, 32, 16);
 const smallSphereColor = new THREE.MeshStandardMaterial({ color: 0xff6347 });
 const smallSphere = new THREE.Mesh(smallSphereTemp, smallSphereColor);
 
@@ -58,12 +58,82 @@ const mapLenght = 2;
 const mapHight = 50;
 
 // Skapa Grunden
-const groundTemp = new THREE.BoxGeometry(mapWidth, 1, mapLenght);
+const groundTemp = new THREE.BoxGeometry(mapWidth, 0.1, mapLenght);
 const material = new THREE.MeshBasicMaterial({
-  color: 0xffff00,
+  color: 0xfee8e9,
   side: THREE.DoubleSide,
 });
 const ground = new THREE.Mesh(groundTemp, material);
 scene.add(ground);
 
+//Skapa väggarna
+const backWallTemp = new THREE.BoxGeometry(mapWidth, mapHight, 0.1);
+const backWall = new THREE.Mesh(backWallTemp, material);
+
+backWall.position.z = -(mapLenght / 2);
+backWall.position.y = mapHight / 2;
+scene.add(backWall);
+
+//Skapa väggorna till sidan
+
+const leftWallTemp = new THREE.BoxGeometry(0.1, mapHight, mapLenght);
+const leftWall = new THREE.Mesh(leftWallTemp, material);
+
+leftWall.position.x = -(mapWidth / 2);
+leftWall.position.y = mapHight / 2;
+scene.add(leftWall);
+
+const rightWallTemp = new THREE.BoxGeometry(0.1, mapHight, mapLenght);
+const rightWall = new THREE.Mesh(rightWallTemp, material);
+
+rightWall.position.x = mapWidth / 2;
+rightWall.position.y = mapHight / 2;
+scene.add(rightWall);
+
+//Skapa frontväggen
+const frontWallTemp = new THREE.BoxGeometry(mapWidth, mapHight, 0.1);
+const frontWallColor = new THREE.MeshStandardMaterial({
+  color: 0xff6347,
+  opacity: 0.4,
+  transparent: true,
+});
+const frontWall = new THREE.Mesh(frontWallTemp, frontWallColor);
+
+frontWall.position.z = mapLenght / 2;
+frontWall.position.y = mapHight / 2;
+scene.add(frontWall);
+
+/*
+let APP_ = null;
+window.addEventListener("DOMContentLoader", async () => {
+  Ammo().then((lib) => {
+    ammo = lib;
+    APP_ = scene;
+    APP_.initialize();
+  });
+});*/
+
+let physicsWorld;
+
+Ammo().then(start);
+
+function start() {
+  //code goes here
+  setupPhysicsWorld();
+}
+
+function setupPhysicsWorld() {
+  let collisionConfiguration = new Ammo.btDefaultCollisionConfiguration(),
+    dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration),
+    overlappingPairCache = new Ammo.btDbvtBroadphase(),
+    solver = new Ammo.btSequentialImpulseConstraintSolver();
+
+  physicsWorld = new Ammo.btDiscreteDynamicsWorld(
+    dispatcher,
+    overlappingPairCache,
+    solver,
+    collisionConfiguration
+  );
+  physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
+}
 animate();
