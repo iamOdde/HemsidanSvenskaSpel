@@ -1,7 +1,6 @@
 import * as THREE from "../../../node_modules/three/build/three.module.js";
-console.log("hej");
 import { OrbitControls } from "../../../node_modules/three/examples/jsm/controls/OrbitControls.js";
-const BODY_RESTITUTION = 0.9;
+
 //variable declaration section
 let physicsWorld,
   scene,
@@ -9,18 +8,26 @@ let physicsWorld,
   renderer,
   controls,
   tmpTrans,
-  rigidBodies = [];
+  rigidBodies = [],
+  ambientLight,
+  pointerLight;
 
-let ballCount = 0;
-let colGroupPlane = 1,
-  colGroupRedBall = 2,
-  colGroupGreenBall = 4;
+let ballCount = 0,
+  t = 0;
 
 let clock = new THREE.Clock();
 
-const mapWidth = 50;
-const mapDepth = 4;
-const mapHeight = 85;
+const mapWidth = 60,
+  mapDepth = 4,
+  mapHeight = 100,
+  BODY_RESTITUTION = 0.9;
+
+var theImages = new Array();
+theImages[0] = "../../imges/boysen/filip.PNG";
+theImages[1] = "../../imges/boysen/oscar.jpeg";
+theImages[2] = "../../imges/boysen/herman.PNG";
+theImages[3] = "../../imges/boysen/matsboge.PNG";
+theImages[4] = "../../imges/boysen/timmy.PNG";
 
 //Ammojs Initialization
 Ammo().then(start);
@@ -34,76 +41,89 @@ function start() {
 
   //createBlock();
   //Ground
-  createBlock({ x: mapWidth, y: 1, z: mapDepth }, { x: 0, y: 0, z: 0 });
+  createBlock(
+    { x: mapWidth, y: 1, z: mapDepth },
+    { x: 0, y: 0, z: 0 },
+    0xfee8e9,
+    0.3,
+    true
+  );
   //Right Wall
   createBlock(
     { x: 1, y: mapHeight, z: mapDepth },
-    { x: mapWidth / 2, y: mapHeight / 2, z: 0 }
+    { x: mapWidth / 2, y: mapHeight / 2, z: 0 },
+    0xfee8e9
   );
   //Left Wall
   createBlock(
     { x: 1, y: mapHeight, z: mapDepth },
-    { x: -(mapWidth / 2), y: mapHeight / 2, z: 0 }
+    { x: -(mapWidth / 2), y: mapHeight / 2, z: 0 },
+    0xfee8e9
   );
   //Back Wall
   createBlock(
     { x: mapWidth, y: mapHeight, z: 1 },
-    { x: 0, y: mapHeight / 2, z: -mapDepth / 2 }
+    { x: 0, y: mapHeight / 2, z: -mapDepth / 2 },
+    0xfee8e9
   );
   //Celling
-  createBlock({ x: mapWidth, y: 1, z: mapDepth }, { x: 0, y: mapHeight, z: 0 });
+  createBlock(
+    { x: mapWidth, y: 1, z: mapDepth },
+    { x: 0, y: mapHeight, z: 0 },
+    0xfee8e9
+  );
   //Front Wall
   createBlock(
     { x: mapWidth, y: mapHeight, z: 1 },
     { x: 0, y: mapHeight / 2, z: mapDepth / 2 },
-    0xa0afa4,
-    0.5,
+    0xfee8e9,
+    0.1,
     true
   );
 
   //Cylindrar
-  createCylinder({ x: 0, y: 55, z: 0 });
+  createCylinder({ x: 0, y: 60, z: 0 });
   //Rad 2
-  createCylinder({ x: 4, y: 50, z: 0 });
-  createCylinder({ x: -4, y: 50, z: 0 });
+  createCylinder({ x: 4, y: 55, z: 0 });
+  createCylinder({ x: -4, y: 55, z: 0 });
   //Rad 3
-  createCylinder({ x: 0, y: 45, z: 0 });
-  createCylinder({ x: 8, y: 45, z: 0 });
-  createCylinder({ x: -8, y: 45, z: 0 });
+  createCylinder({ x: 0, y: 50, z: 0 });
+  createCylinder({ x: 8, y: 50, z: 0 });
+  createCylinder({ x: -8, y: 50, z: 0 });
   //rad 4
-  createCylinder({ x: 4, y: 40, z: 0 });
-  createCylinder({ x: -4, y: 40, z: 0 });
-  createCylinder({ x: 12, y: 40, z: 0 });
-  createCylinder({ x: -12, y: 40, z: 0 });
+  createCylinder({ x: 4, y: 45, z: 0 });
+  createCylinder({ x: -4, y: 45, z: 0 });
+  createCylinder({ x: 12, y: 45, z: 0 });
+  createCylinder({ x: -12, y: 45, z: 0 });
   //Rad 5
-  createCylinder({ x: 0, y: 35, z: 0 });
-  createCylinder({ x: 8, y: 35, z: 0 });
-  createCylinder({ x: -8, y: 35, z: 0 });
-  createCylinder({ x: 16, y: 35, z: 0 });
-  createCylinder({ x: -16, y: 35, z: 0 });
+  createCylinder({ x: 0, y: 40, z: 0 });
+  createCylinder({ x: 8, y: 40, z: 0 });
+  createCylinder({ x: -8, y: 40, z: 0 });
+  createCylinder({ x: 16, y: 40, z: 0 });
+  createCylinder({ x: -16, y: 40, z: 0 });
   //Rad 6
-  createCylinder({ x: 4, y: 30, z: 0 });
-  createCylinder({ x: -4, y: 30, z: 0 });
-  createCylinder({ x: 12, y: 30, z: 0 });
-  createCylinder({ x: -12, y: 30, z: 0 });
-  createCylinder({ x: 20, y: 30, z: 0 });
-  createCylinder({ x: -20, y: 30, z: 0 });
+  createCylinder({ x: 4, y: 35, z: 0 });
+  createCylinder({ x: -4, y: 35, z: 0 });
+  createCylinder({ x: 12, y: 35, z: 0 });
+  createCylinder({ x: -12, y: 35, z: 0 });
+  createCylinder({ x: 20, y: 35, z: 0 });
+  createCylinder({ x: -20, y: 35, z: 0 });
 
   //Längs ner
-  createBlock({ x: 1.5, y: 10, z: mapDepth }, { x: 0, y: 5, z: 0 }, 0x202020);
+  createBlock({ x: 1.5, y: 10, z: mapDepth }, { x: 0, y: 5, z: 0 }, 0xff0000);
   createCylinder({ x: 0, y: 10, z: 0 });
 
   createBlock(
     { x: 1.5, y: 10, z: mapDepth },
     { x: 12.5, y: 5, z: 0 },
-    0x202020
+    0xff0000
   );
   createCylinder({ x: 12.5, y: 10, z: 0 });
 
   createBlock(
     { x: 1.5, y: 10, z: mapDepth },
     { x: -12.5, y: 5, z: 0 },
-    0x202020
+    0xff0000
   );
   createCylinder({ x: -12.5, y: 10, z: 0 });
 
@@ -146,11 +166,12 @@ function setupGraphics() {
   camera.position.setZ(30);
   camera.position.setY(30);
 
-  const pointerLight = new THREE.PointLight(0xffffff);
-  pointerLight.position.set(20, 20, 20);
+  pointerLight = new THREE.PointLight(0xffffff);
+  pointerLight.intensity = 0;
 
-  const ambientLight = new THREE.AmbientLight(0xffffff);
-  scene.add(pointerLight, ambientLight);
+  ambientLight = new THREE.AmbientLight(0xffffff);
+  ambientLight.intensity = 0.98;
+  scene.add(ambientLight, pointerLight);
 
   controls = new OrbitControls(camera, renderer.domElement);
 }
@@ -163,6 +184,10 @@ function animate() {
   updatePhysics(deltaTime);
 
   controls.update();
+
+  t += 0.01;
+  pointerLight.position.x = 200 * Math.cos(t) + 0;
+  pointerLight.position.z = 200 * Math.sin(t) + 0;
 
   renderer.render(scene, camera);
 }
@@ -231,7 +256,7 @@ function createCylinder(pos = { x: 0, y: 0, z: 0 }) {
   let CylinderPlane = new THREE.Mesh(
     new THREE.CylinderGeometry(),
     new THREE.MeshPhongMaterial({
-      color: 0x202020,
+      color: 0xff0000,
     })
   );
 
@@ -275,7 +300,7 @@ function createCylinder(pos = { x: 0, y: 0, z: 0 }) {
 function createBall() {
   let pos = {
     x: Math.random() * (3 - -3 + 1) + -3,
-    y: Math.random() * (76 - 68 + 1) + 68,
+    y: Math.random() * (88 - 70 + 1) + 70,
     z: 0,
   };
   let radius = 1.2;
@@ -287,6 +312,65 @@ function createBall() {
     new THREE.SphereBufferGeometry(radius),
     new THREE.MeshPhongMaterial({
       color: "#" + Math.floor(Math.random() * 16777215).toString(16),
+    })
+  );
+
+  ball.position.set(pos.x, pos.y, pos.z);
+
+  ball.castShadow = true;
+  ball.receiveShadow = true;
+
+  scene.add(ball);
+
+  //Ammojs Section
+  let transform = new Ammo.btTransform();
+  transform.setIdentity();
+  transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
+  transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
+  let motionState = new Ammo.btDefaultMotionState(transform);
+
+  let colShape = new Ammo.btSphereShape(radius);
+  colShape.setMargin(0.05);
+
+  let localInertia = new Ammo.btVector3(0, 0, 0);
+  colShape.calculateLocalInertia(mass, localInertia);
+  let rbInfo = new Ammo.btRigidBodyConstructionInfo(
+    mass,
+    motionState,
+    colShape,
+    localInertia
+  );
+  let body = new Ammo.btRigidBody(rbInfo);
+  physicsWorld.addRigidBody(body);
+
+  ball.userData.physicsBody = body;
+  body.setRestitution(BODY_RESTITUTION);
+  rigidBodies.push(ball);
+
+  ballCount++;
+  document.getElementById("ballCount").innerHTML =
+    "Ball Count: " + ballCount.toString();
+}
+
+function createIMGBall() {
+  let pos = {
+    x: Math.random() * (3 - -3 + 1) + -3,
+    y: Math.random() * (88 - 70 + 1) + 70,
+    z: 0,
+  };
+  let radius = 1.2;
+  let quat = { x: 0, y: 0, z: 0, w: 1 };
+  let mass = 1;
+
+  //threeJS Section
+  const texture = new THREE.TextureLoader().load(
+    theImages[Math.floor(Math.random() * 5)]
+  );
+
+  let ball = new THREE.Mesh(
+    new THREE.SphereBufferGeometry(radius),
+    new THREE.MeshBasicMaterial({
+      map: texture,
     })
   );
 
@@ -346,6 +430,31 @@ function updatePhysics(deltaTime) {
   }
 }
 
+function checkIfOutside() {
+  for (let j = 0; j < rigidBodies.length; j++) {
+    if (rigidBodies[j].position.y < -10) {
+      console.log("Delete mesh");
+      rigidBodies[j].geometry.dispose();
+      rigidBodies[j].material.dispose();
+      scene.remove(rigidBodies[j]);
+      ballCount = ballCount - 1;
+    }
+  }
+  document.getElementById("ballCount").innerHTML =
+    "Ball Count: " + ballCount.toString();
+}
+
+function sunLight() {
+  if (ambientLight.intensity != 0) {
+    ambientLight.intensity = 0;
+    pointerLight.intensity = 1;
+    pointerLight.position.set(0, 50, 50);
+  } else {
+    ambientLight.intensity = 0.98;
+    pointerLight.intensity = 0;
+  }
+}
+
 document.getElementById("spawnOneBall").onclick = function () {
   createBall();
 };
@@ -354,4 +463,19 @@ document.getElementById("spawn50Ball").onclick = function () {
   for (let i = 0; i < 50; i++) {
     createBall();
   }
+};
+
+document.getElementById("spawnIMGBall").onclick = function () {
+  createIMGBall();
+};
+document.getElementById("spawn50IMGBall").onclick = function () {
+  for (let i = 0; i < 50; i++) {
+    createIMGBall();
+  }
+};
+document.getElementById("checkIfOutside").onclick = function () {
+  checkIfOutside();
+};
+document.getElementById("sunLight").onclick = function () {
+  sunLight();
 };
